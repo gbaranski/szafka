@@ -37,10 +37,10 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
     }
 
     /// Overwrite the existing data
-    pub async fn save(&self, data: impl AsRef<T>) -> Result<(), Error> {
+    pub async fn save(&self, data: &T) -> Result<(), Error> {
         use tokio::io::AsyncWriteExt;
 
-        let file_contents = serde_json::to_string_pretty(data.as_ref())?;
+        let file_contents = serde_json::to_string_pretty(data)?;
 
         if let Some(path) = self.path.parent() {
             if !path.exists() {
