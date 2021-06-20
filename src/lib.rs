@@ -29,9 +29,9 @@ pub struct Szafka<T> {
 }
 
 impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
-    pub fn new(path: impl Into<std::path::PathBuf>) -> Self {
+    pub fn new(path: impl AsRef<std::path::Path>) -> Self {
         Self {
-            path: path.into(),
+            path: path.as_ref().into(),
             phantom: std::marker::PhantomData::default(),
         }
     }
@@ -90,4 +90,3 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
         }
     }
 }
-
