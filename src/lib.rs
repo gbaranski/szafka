@@ -41,24 +41,23 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
     /// # Examples
     ///
     /// ```rust
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     use szafka::Szafka;
-    ///     use serde::{Serialize, Deserialize};
+    /// # tokio_test::block_on(async {
+    /// use szafka::Szafka;
+    /// use serde::{Serialize, Deserialize};
     ///
-    ///     #[derive(Debug, Clone, Serialize, Deserialize)]
-    ///     struct Something {
-    ///         name: String,
-    ///         id: u64,
-    ///     }
-    ///
-    ///     let szafka = Szafka::new("/tmp/welcome-to-szafka");
-    ///     let something = Something {
-    ///         name: String::from("John"),
-    ///         id: 1000,
-    ///     };
-    ///     szafka.save(&something).await.expect("save failed");
+    /// #[derive(Debug, Clone, Serialize, Deserialize)]
+    /// struct Something {
+    ///     name: String,
+    ///     id: u64,
     /// }
+    ///
+    /// let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    /// let something = Something {
+    ///     name: String::from("John"),
+    ///     id: 1000,
+    /// };
+    /// szafka.save(&something).await.expect("save failed");
+    /// # })
     /// ```
     pub async fn save(&self, data: &T) -> Result<(), Error> {
         use tokio::io::AsyncWriteExt;
@@ -96,26 +95,25 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
     /// # Examples
     ///
     /// ```rust
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     use szafka::Szafka;
-    ///     use serde::{Serialize, Deserialize};
+    /// # tokio_test::block_on(async {
+    /// use szafka::Szafka;
+    /// use serde::{Serialize, Deserialize};
     ///
-    ///     #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-    ///     struct Something {
-    ///         name: String,
-    ///         id: u64,
-    ///     }
-    ///
-    ///     let szafka = Szafka::new("/tmp/welcome-to-szafka");
-    ///     let something = Something {
-    ///         name: String::from("John"),
-    ///         id: 1000,
-    ///     };
-    ///     szafka.save(&something).await.expect("save failed");
-    ///     let retrieved = szafka.get().await.expect("get data failed");
-    ///     assert_eq!(something, retrieved);
+    /// #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+    /// struct Something {
+    ///     name: String,
+    ///     id: u64,
     /// }
+    ///
+    /// let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    /// let something = Something {
+    ///     name: String::from("John"),
+    ///     id: 1000,
+    /// };
+    /// szafka.save(&something).await.expect("save failed");
+    /// let retrieved = szafka.get().await.expect("get data failed");
+    /// assert_eq!(something, retrieved);
+    /// # })
     /// ```
     pub async fn get(&self) -> Result<T, Error> {
         let file = tokio::fs::OpenOptions::new()
@@ -129,31 +127,59 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
         Ok(file)
     }
 
+    /// Check if there is any saved data
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # tokio_test::block_on(async {
+    /// use szafka::Szafka;
+    /// use serde::{Serialize, Deserialize};
+    ///
+    /// #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+    /// struct Something {
+    ///     name: String,
+    ///     id: u64,
+    /// }
+    ///
+    /// let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    /// let something = Something {
+    ///     name: String::from("John"),
+    ///     id: 1000,
+    /// };
+    /// szafka.save(&something).await.expect("save failed");
+    /// assert!(szafka.exists());
+    /// # })
+    /// ```
+    pub fn exists(&self) -> bool {
+        self.path.exists()
+    }
+
+
     /// Flush stored data
     ///
     /// # Examples
     ///
     /// ```rust
-    /// #[tokio::main]
-    /// async fn main() {
-    ///     use szafka::Szafka;
-    ///     use serde::{Serialize, Deserialize};
+    /// # tokio_test::block_on(async {
+    /// use szafka::Szafka;
+    /// use serde::{Serialize, Deserialize};
     ///
-    ///     #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-    ///     struct Something {
-    ///         name: String,
-    ///         id: u64,
-    ///     }
-    ///
-    ///     let szafka = Szafka::new("/tmp/welcome-to-szafka");
-    ///     let something = Something {
-    ///         name: String::from("John"),
-    ///         id: 1000,
-    ///     };
-    ///     szafka.save(&something).await.expect("save failed");
-    ///     szafka.flush().await.expect("flush failed");
-    ///     let retrieved = szafka.get().await.expect_err("data not flushed correctly");
+    /// #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+    /// struct Something {
+    ///     name: String,
+    ///     id: u64,
     /// }
+    ///
+    /// let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    /// let something = Something {
+    ///     name: String::from("John"),
+    ///     id: 1000,
+    /// };
+    /// szafka.save(&something).await.expect("save failed");
+    /// szafka.flush().await.expect("flush failed");
+    /// assert!(szafka.exists() == false);
+    /// # })
     /// ```
     pub async fn flush(&self) -> Result<(), Error> {
         if self.path.exists() {

@@ -21,4 +21,4 @@ thiserror = "1.0.25"
 tokio = { version = "1.7.1", features = ["io-util", "fs"] }
 
 [dev-dependencies]
-tokio = { version = "1.7.1", features = ["io-util", "fs", "macros", "rt-multi-thread"] }
+tokio-test = "0.4.2"
