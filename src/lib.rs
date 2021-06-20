@@ -57,7 +57,7 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
     ///         name: String::from("John"),
     ///         id: 1000,
     ///     };
-    ///     szafka.save(&something).await;
+    ///     szafka.save(&something).await.expect("save failed");
     /// }
     /// ```
     pub async fn save(&self, data: &T) -> Result<(), Error> {
@@ -91,6 +91,32 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
         Ok(())
     }
 
+    /// Retrieve stored data
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     use szafka::Szafka;
+    ///     use serde::{Serialize, Deserialize};
+    ///
+    ///     #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+    ///     struct Something {
+    ///         name: String,
+    ///         id: u64,
+    ///     }
+    ///
+    ///     let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    ///     let something = Something {
+    ///         name: String::from("John"),
+    ///         id: 1000,
+    ///     };
+    ///     szafka.save(&something).await.expect("save failed");
+    ///     let something_retrieved = szafka.get().await.expect("get data failed");
+    ///     assert_eq!(something, something_retrieved);
+    /// }
+    /// ```
     pub async fn get(&self) -> Result<T, Error> {
         let file = tokio::fs::OpenOptions::new()
             .read(true)
@@ -103,6 +129,32 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
         Ok(file)
     }
 
+    /// Flush stored data
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     use szafka::Szafka;
+    ///     use serde::{Serialize, Deserialize};
+    ///
+    ///     #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+    ///     struct Something {
+    ///         name: String,
+    ///         id: u64,
+    ///     }
+    ///
+    ///     let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    ///     let something = Something {
+    ///         name: String::from("John"),
+    ///         id: 1000,
+    ///     };
+    ///     szafka.save(&something).await.expect("save failed");
+    ///     szafka.flush().await.expect("flush failed");
+    ///     let retrieved = szafka.get().await.expect_err("data not flushed correctly");
+    /// }
+    /// ```
     pub async fn flush(&self) -> Result<(), Error> {
         if self.path.exists() {
             Ok(tokio::fs::remove_file(&self.path)
