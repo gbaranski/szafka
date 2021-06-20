@@ -37,6 +37,29 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
     }
 
     /// Overwrite the existing data
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     use szafka::Szafka;
+    ///     use serde::{Serialize, Deserialize};
+    ///
+    ///     #[derive(Debug, Clone, Serialize, Deserialize)]
+    ///     struct Something {
+    ///         name: String,
+    ///         id: u64,
+    ///     }
+    ///
+    ///     let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    ///     let something = Something {
+    ///         name: String::from("John"),
+    ///         id: 1000,
+    ///     };
+    ///     szafka.save(&something).await;
+    /// }
+    /// ```
     pub async fn save(&self, data: &T) -> Result<(), Error> {
         use tokio::io::AsyncWriteExt;
 
