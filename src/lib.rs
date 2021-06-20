@@ -113,8 +113,8 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
     ///         id: 1000,
     ///     };
     ///     szafka.save(&something).await.expect("save failed");
-    ///     let something_retrieved = szafka.get().await.expect("get data failed");
-    ///     assert_eq!(something, something_retrieved);
+    ///     let retrieved = szafka.get().await.expect("get data failed");
+    ///     assert_eq!(something, retrieved);
     /// }
     /// ```
     pub async fn get(&self) -> Result<T, Error> {
