@@ -1,10 +1,17 @@
 [package]
 name = "szafka"
+description = "Asynchronous persistent data store in Rust."
 version = "0.1.0"
 authors = ["gbaranski <root@gbaranski.com>"]
+license = "GPL-3.0-or-later"
+keywords = ["asynchronous", "filesystem", "cache", "store", "persistent"]
+categories = ["asynchronous", "filesystem"]
+repository = "https://github.com/gbaranski/szafka/"
+homepage = "https://github.com/gbaranski/szafka/"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[badges]
+maintenance = { status = "as-is" }
 
 [dependencies]
 serde = { version = "1.0.126", features = ["derive"] }
