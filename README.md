@@ -30,6 +30,23 @@ async fn main() {
 
 More information can be found in [the documentation](https://docs.rs/szafka)
 
+## Tests
+
+All tests: `cargo test`.
+Documentation tests: `cargo test --doc`.
+Unit tests: `cargo test --tests`.
+
+Check code coverage using [tarpaulin](https://github.com/xd009642/tarpaulin).
+
+```rust
+cargo tarpaulin --lib
+Jun 21 02:05:24.123  INFO cargo_tarpaulin::report: Coverage Results:
+|| Tested/Total Lines:
+|| src/lib.rs: 70/79 +0%
+||
+88.61% coverage, 70/79 lines covered, +0% change in coverage
+```
+
 ## Benchmarks
 
 Run benchmarks using `cargo bench`.
