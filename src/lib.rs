@@ -234,7 +234,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn save_no_parent() {
+    async fn no_parent() {
         let szafka = Szafka::new("/tmp/szafka/subdir/file");
         let something = Something::random();
         szafka.save(&something).await.unwrap();
@@ -246,7 +246,7 @@ mod tests {
 
 
     #[tokio::test]
-    async fn save_get() {
+    async fn get() {
         let szafka = get_szafka::<Something>().await;
         let something = Something::random();
         szafka.save(&something).await.unwrap();
@@ -257,7 +257,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn save_flush() {
+    async fn flush() {
         let szafka = get_szafka::<Something>().await;
         let something = Something::random();
         szafka.save(&something).await.unwrap();
@@ -269,7 +269,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn save_exists() {
+    async fn exists() {
         let szafka = get_szafka::<Something>().await;
         let something = Something::random();
         szafka.save(&something).await.unwrap();
