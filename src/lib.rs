@@ -155,7 +155,6 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
         self.path.exists()
     }
 
-
     /// Flush stored data
     ///
     /// # Examples
@@ -189,5 +188,93 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
         } else {
             Ok(())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde::{Deserialize, Serialize};
+
+    fn id() -> usize {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        static ID: AtomicUsize = AtomicUsize::new(0);
+        ID.fetch_add(1, Ordering::SeqCst)
+    }
+
+    async fn get_szafka<T: de::DeserializeOwned + ser::Serialize>() -> Szafka<T> {
+        let szafka = Szafka::new(format!("/tmp/szafka-test-{}", id()));
+        szafka.flush().await.unwrap();
+        szafka
+    }
+
+    async fn teardown<T: de::DeserializeOwned + ser::Serialize>(szafka: Szafka<T>) {
+        szafka.flush().await.unwrap()
+    }
+
+    #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+    struct Something {
+        name: String,
+        id: u64,
+    }
+
+    impl Something {
+        pub fn random() -> Self {
+            use rand::{Rng, RngCore};
+
+            let mut rng = rand::thread_rng();
+            let mut name = [0; 16];
+            rng.fill_bytes(&mut name);
+            let name = hex::encode(name);
+            Self {
+                name,
+                id: rng.gen(),
+            }
+        }
+    }
+
+    #[tokio::test]
+    async fn save_no_parent() {
+        let szafka = Szafka::new("/tmp/szafka/subdir/file");
+        let something = Something::random();
+        szafka.save(&something).await.unwrap();
+        assert!(szafka.exists());
+        assert_eq!(szafka.get().await.unwrap(), something);
+
+        teardown(szafka).await
+    }
+
+
+    #[tokio::test]
+    async fn save_get() {
+        let szafka = get_szafka::<Something>().await;
+        let something = Something::random();
+        szafka.save(&something).await.unwrap();
+        assert!(szafka.exists());
+        assert_eq!(szafka.get().await.unwrap(), something);
+
+        teardown(szafka).await
+    }
+
+    #[tokio::test]
+    async fn save_flush() {
+        let szafka = get_szafka::<Something>().await;
+        let something = Something::random();
+        szafka.save(&something).await.unwrap();
+        assert!(szafka.exists());
+        szafka.flush().await.unwrap();
+        szafka.flush().await.unwrap();
+        assert!(!szafka.exists());
+        teardown(szafka).await
+    }
+
+    #[tokio::test]
+    async fn save_exists() {
+        let szafka = get_szafka::<Something>().await;
+        let something = Something::random();
+        szafka.save(&something).await.unwrap();
+        assert!(szafka.exists());
+
+        teardown(szafka).await
     }
 }
