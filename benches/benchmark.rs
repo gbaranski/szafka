@@ -11,6 +11,7 @@ struct Something {
 }
 
 impl Something {
+    #[cfg(not(tarpaulin_include))]
     pub fn random() -> Self {
         let mut rng = rand::thread_rng();
         let mut name = [0; 16];
