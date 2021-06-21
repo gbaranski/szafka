@@ -1,5 +1,10 @@
+![Crates.io](https://img.shields.io/crates/d/szafka)
+![Crates.io](https://img.shields.io/crates/v/szafka)
+![docs.rs](https://img.shields.io/docsrs/szafka)
+
 # szafka
 Asynchronous persistent data store in Rust.
+
 
 ## Usage
 
