@@ -24,7 +24,7 @@ pub enum Error {
 
 #[derive(Debug, Clone)]
 pub struct Szafka<T> {
-    path: PathBuf,
+    pub path: PathBuf,
     phantom: std::marker::PhantomData<T>,
 }
 
