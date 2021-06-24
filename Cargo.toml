@@ -2,7 +2,7 @@
 name = "szafka"
 description = "Asynchronous persistent data store in Rust."
 readme = "README.md"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["gbaranski <root@gbaranski.com>"]
 license = "MIT"
 keywords = ["asynchronous", "filesystem", "cache", "store", "persistent"]
