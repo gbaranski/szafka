@@ -18,6 +18,6 @@ async fn main() {
     let retrieved = szafka.get().await.expect("get failed");
     assert_eq!(something, retrieved);
     assert!(szafka.exists());
-    szafka.flush().await.expect("flush failed");
+    szafka.remove().await.expect("remove failed");
     assert!(!szafka.exists());
 }

@@ -155,7 +155,7 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
         self.path.exists()
     }
 
-    /// Flush stored data
+    /// Remove stored data
     ///
     /// # Examples
     ///
@@ -176,11 +176,11 @@ impl<T: de::DeserializeOwned + ser::Serialize> Szafka<T> {
     ///     id: 1000,
     /// };
     /// szafka.save(&something).await.expect("save failed");
-    /// szafka.flush().await.expect("flush failed");
+    /// szafka.remove().await.expect("remove failed");
     /// assert!(szafka.exists() == false);
     /// # })
     /// ```
-    pub async fn flush(&self) -> Result<(), Error> {
+    pub async fn remove(&self) -> Result<(), Error> {
         if self.path.exists() {
             Ok(tokio::fs::remove_file(&self.path)
                 .await
@@ -204,12 +204,12 @@ mod tests {
 
     async fn get_szafka<T: de::DeserializeOwned + ser::Serialize>() -> Szafka<T> {
         let szafka = Szafka::new(format!("/tmp/szafka-test-{}", id()));
-        szafka.flush().await.unwrap();
+        szafka.remove().await.unwrap();
         szafka
     }
 
     async fn teardown<T: de::DeserializeOwned + ser::Serialize>(szafka: Szafka<T>) {
-        szafka.flush().await.unwrap()
+        szafka.remove().await.unwrap()
     }
 
     #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -257,13 +257,13 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn flush() {
+    async fn remove() {
         let szafka = get_szafka::<Something>().await;
         let something = Something::random();
         szafka.save(&something).await.unwrap();
         assert!(szafka.exists());
-        szafka.flush().await.unwrap();
-        szafka.flush().await.unwrap();
+        szafka.remove().await.unwrap();
+        szafka.remove().await.unwrap();
         assert!(!szafka.exists());
         teardown(szafka).await
     }
