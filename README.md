@@ -3,12 +3,12 @@
 ![docs.rs](https://img.shields.io/docsrs/szafka)
 
 # szafka
-Asynchronous persistent data store in Rust.
+Persistent data store in Rust.
 
 
 ## Usage
 
-Basic usage:
+Sync API usage:
 
 ```rust
 #[tokio::main]
@@ -23,6 +23,32 @@ async fn main() {
     }
     
     let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    let something = Something {
+        name: String::from("John"),
+        id: 1000,
+    };
+    szafka.save(&something).expect("save failed");
+    let retrieved = szafka.get().expect("get data failed");
+    assert_eq!(something, retrieved);
+}
+```
+
+
+Async API usage(enable with `async` feature):
+
+```rust
+#[tokio::main]
+async fn main() {
+    use szafka::AsyncSzafka;
+    use serde::{Serialize, Deserialize};
+    
+    #[derive(Debug, Clone, Serialize, Deserialize)]
+    struct Something {
+        name: String,
+        id: u64,
+    }
+    
+    let szafka = AsyncSzafka::new("/tmp/welcome-to-async-szafka");
     let something = Something {
         name: String::from("John"),
         id: 1000,
@@ -45,22 +71,26 @@ Check code coverage using [tarpaulin](https://github.com/xd009642/tarpaulin).
 
 ```rust
 cargo tarpaulin --lib
-Jun 21 02:05:24.123  INFO cargo_tarpaulin::report: Coverage Results:
+Oct 19 22:04:02.086  INFO cargo_tarpaulin::report: Coverage Results:
 || Tested/Total Lines:
-|| src/lib.rs: 70/79 +0%
-||
-88.61% coverage, 70/79 lines covered, +0% change in coverage
+|| src/async.rs: 70/79
+|| src/sync.rs: 68/72
+|| 
+91.39% coverage, 138/151 lines covered
 ```
 
 ## Benchmarks
 
 Run benchmarks using `cargo bench`.
 
-Results from my Dell XPS 7390 machine with Intel i7-10510U, NVMe, Linux 5.10
+Results from my Optiplex 9020 machine with Intel i7-4790, NVMe, Linux 5.14
 
 ```
-save                    time:   [24.651 us 24.757 us 24.861 us]
-get                     time:   [34.889 us 35.863 us 36.809 us]
+save                    time:   [7.3328 us 7.4197 us 7.5088 us]
+get                     time:   [48.460 us 48.577 us 48.737 us]
+
+async-save              time:   [22.558 us 22.745 us 22.930 us]
+async-get               time:   [58.201 us 58.599 us 59.142 us]
 ```
 
 ## Why

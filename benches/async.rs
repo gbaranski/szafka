@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 use rand::{Rng, RngCore};
 use serde::{Deserialize, Serialize};
-use szafka::Szafka;
+use szafka::AsyncSzafka;
 use tokio::runtime::Runtime;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -26,9 +26,9 @@ impl Something {
 
 fn criterion_benchmark(c: &mut Criterion) {
     let runtime = Runtime::new().expect("create runtime fail");
-    let szafka = Szafka::new("/tmp/szafka-benches");
+    let szafka = AsyncSzafka::new("/tmp/async-szafka-benches");
 
-    c.bench_function("save", |b| {
+    c.bench_function("async-save", |b| {
         b.to_async(&runtime).iter(|| async {
             let something = Something::random();
             szafka.save(&something).await.unwrap();
@@ -39,10 +39,13 @@ fn criterion_benchmark(c: &mut Criterion) {
     runtime.block_on(async {
         szafka.save(&something).await.unwrap();
     });
-    c.bench_function("get", |b| {
+    c.bench_function("async-get", |b| {
         b.to_async(&runtime).iter(|| async {
             assert_eq!(szafka.get().await.unwrap(), something);
         })
+    });
+    runtime.block_on(async {
+        szafka.remove().await.unwrap();
     });
 }
 

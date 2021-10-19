@@ -1,12 +1,12 @@
 [package]
 name = "szafka"
-description = "Asynchronous persistent data store in Rust."
+description = "Persistent data store in Rust."
 readme = "README.md"
-version = "0.2.0"
+version = "0.3.1"
 authors = ["gbaranski <root@gbaranski.com>"]
 license = "MIT"
-keywords = ["asynchronous", "filesystem", "cache", "store", "persistent"]
-categories = ["asynchronous", "filesystem"]
+keywords = ["filesystem", "cache", "store", "persistent"]
+categories = ["filesystem"]
 repository = "https://github.com/gbaranski/szafka/"
 homepage = "https://github.com/gbaranski/szafka/"
 edition = "2018"
@@ -18,7 +18,7 @@ maintenance = { status = "as-is" }
 serde = { version = "1.0.126", features = ["derive"] }
 serde_json = "1.0.64"
 thiserror = "1.0.25"
-tokio = { version = "1.7.1", features = ["io-util", "fs"] }
+tokio = { version = "1.7.1", features = ["io-util", "fs"], optional = true }
 
 [dev-dependencies]
 tokio-test = "0.4.2"
@@ -28,5 +28,20 @@ rand = "0.8.4"
 hex = "0.4.3"
 
 [[bench]]
-name = "benchmark"
+name = "async"
 harness = false
+required-features = ["async"]
+
+[[bench]]
+name = "sync"
+harness = false
+
+[[example]]
+name = "async"
+required-features = ["async"]
+
+[features]
+default = ["sync"]
+
+sync = []
+async = ["tokio"]
