@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use szafka::Szafka;
+use szafka::AsyncSzafka;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 struct Something {
@@ -9,7 +9,7 @@ struct Something {
 
 #[tokio::main]
 async fn main() {
-    let szafka = Szafka::new("/tmp/welcome-to-szafka");
+    let szafka = AsyncSzafka::new("/tmp/welcome-to-async-szafka");
     let something = Something {
         name: String::from("John"),
         id: 1000,
