@@ -11,8 +11,7 @@ Persistent data store in Rust.
 Sync API usage:
 
 ```rust
-#[tokio::main]
-async fn main() {
+fn main() {
     use szafka::Szafka;
     use serde::{Serialize, Deserialize};
     
